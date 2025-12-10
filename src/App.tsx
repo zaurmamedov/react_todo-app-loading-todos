@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useState, useEffect } from 'react';
@@ -10,25 +11,29 @@ import { TodoList } from './components/TodoList';
 import { TodoFooter } from './components/TodoFooter';
 import { Error } from './components/Error';
 
+enum Status {
+  all = 'all',
+  active = 'active',
+  completed = 'completed'
+}
+
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [statusFilter, setStatusFilter] = useState<
-  'all' | 'active' | 'completed'
-  >('all');
+  const [statusFilter, setStatusFilter] = useState<Status>(Status.all);
   const [title, setTitle] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);
+  // const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);
   const [isErrorVisible, setIsErrorVisible] = useState(false);
 
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   const visibleTodos = todos.filter(todo => {
-    if (statusFilter === 'active') {
+    if (statusFilter === Status.active) {
       return !todo.completed;
     }
 
-    if (statusFilter === 'completed') {
+    if (statusFilter === Status.completed) {
       return todo.completed;
     }
 
@@ -38,7 +43,7 @@ export const App: React.FC = () => {
   const activeTodos = todos?.filter(todo => !todo.completed);
 
   useEffect(() => {
-    setLoadingTodoIds([]);
+    // setLoadingTodoIds([]);
 
     todoService
       .getTodos()
@@ -77,20 +82,20 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
 
-  function startLoading(id: number) {
-    setLoadingTodoIds(ids => [...ids, id]);
-  }
+  // function startLoading(id: number) {
+  //   setLoadingTodoIds(ids => [...ids, id]);
+  // }
 
-  function stopLoading(id: number) {
-    setLoadingTodoIds(ids => ids.filter(x => x !== id));
-  }
+  // function stopLoading(id: number) {
+  //   setLoadingTodoIds(ids => ids.filter(x => x !== id));
+  // }
 
   async function addTodo(todoTitle: string): Promise<void> {
     setErrorMessage('');
 
     const tempId = Date.now();
 
-    startLoading(tempId);
+    // startLoading(tempId);
 
     setTodos(current => [
       ...current,
@@ -110,13 +115,13 @@ export const App: React.FC = () => {
         throw error;
       })
       .finally(() => {
-        setTimeout(() => stopLoading(tempId), 400);
+        // setTimeout(() => stopLoading(tempId), 400);
       });
   }
 
   async function updateTodo(id: number, completed: boolean): Promise<void> {
     setErrorMessage('');
-    startLoading(id);
+    // startLoading(id);
 
     return todoService
       .updateTodo({ id, completed })
@@ -131,13 +136,13 @@ export const App: React.FC = () => {
         setErrorMessage('Unable to update a todo');
       })
       .finally(() => {
-        setTimeout(() => stopLoading(id), 400);
+        // setTimeout(() => stopLoading(id), 400);
       });
   }
 
   async function deleteTodo(todoId: number) {
     setErrorMessage('');
-    startLoading(todoId);
+    // startLoading(todoId);
 
     return todoService
       .deleteTodo(todoId)
@@ -151,7 +156,7 @@ export const App: React.FC = () => {
         setErrorMessage('Unable to delete a todo');
       })
       .finally(() => {
-        setTimeout(() => stopLoading(todoId), 400);
+        // setTimeout(() => stopLoading(todoId), 400);
       });
   }
 
@@ -159,7 +164,7 @@ export const App: React.FC = () => {
     const completedTodos = todos.filter(todo => todo.completed);
 
     completedTodos.forEach(todo => {
-      startLoading(todo.id);
+      // startLoading(todo.id);
 
       todoService
         .deleteTodo(todo.id)
@@ -170,7 +175,7 @@ export const App: React.FC = () => {
           setErrorMessage('Unable to delete a todo');
         })
         .finally(() => {
-          setTimeout(() => stopLoading(todo.id), 400);
+          // setTimeout(() => stopLoading(todo.id), 400);
         });
     });
   }

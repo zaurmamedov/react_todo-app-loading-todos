@@ -1,13 +1,25 @@
 import { Todo } from '../types/Todo';
 import cn from 'classnames';
 
+enum Status {
+  all = 'all',
+  active = 'active',
+  completed = 'completed',
+}
+
 type Props = {
   todos: Todo[];
   activeTodos: Todo[];
-  statusFilter: 'all' | 'active' | 'completed';
-  setStatusFilter: (string: 'all' | 'active' | 'completed') => void;
+  statusFilter: Status;
+  setStatusFilter: (string: Status) => void;
   clearCompleted: () => void;
 };
+
+const FILTERS = [
+  { label: 'All', value: Status.all, href: '#/' },
+  { label: 'Active', value: Status.active, href: '#/active' },
+  { label: 'Completed', value: Status.completed, href: '#/completed' },
+] as const;
 
 export const TodoFooter = ({
   activeTodos,
@@ -23,38 +35,19 @@ export const TodoFooter = ({
       </span>
 
       <nav className="filter" data-cy="Filter">
-        <a
-          href="#/"
-          className={cn('filter__link', {
-            selected: statusFilter === 'all',
-          })}
-          data-cy="FilterLinkAll"
-          onClick={() => setStatusFilter('all')}
-        >
-          All
-        </a>
-
-        <a
-          href="#/active"
-          className={cn('filter__link', {
-            selected: statusFilter === 'active',
-          })}
-          data-cy="FilterLinkActive"
-          onClick={() => setStatusFilter('active')}
-        >
-          Active
-        </a>
-
-        <a
-          href="#/completed"
-          className={cn('filter__link', {
-            selected: statusFilter === 'completed',
-          })}
-          data-cy="FilterLinkCompleted"
-          onClick={() => setStatusFilter('completed')}
-        >
-          Completed
-        </a>
+        {FILTERS.map(filter => (
+          <a
+            key={filter.value}
+            href={filter.href}
+            className={cn('filter__link', {
+              selected: statusFilter === filter.value,
+            })}
+            onClick={() => setStatusFilter(filter.value)}
+            data-cy={`FilterLink${filter.label}`}
+          >
+            {filter.label}
+          </a>
+        ))}
       </nav>
 
       <button
